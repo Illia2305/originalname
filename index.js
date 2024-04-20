@@ -9,6 +9,15 @@ const server  = http.createServer(function(req, res) {
 		getAllJokes(req, res)
 	}
 
+	if (req.url.startsWith('/like')) {
+		// console.log(req.url)
+		like(req,res)
+	}
+
+    if (req.url.startsWith('/dislike')) {
+        // console.log(req.url)
+        dislike(req,res)
+    }
 	if (req.url == '/jokes'&& req.method == 'POST') {
 		addJoke(req, res)
 	}
@@ -44,4 +53,37 @@ function addJoke(req, res) {
 	fs.writeFileSync(filePath, JSON.stringify(joke))
 	res.end();
 	})
+}
+function like(req, res) {
+	// console.log(req, res)
+	const params = url.parse(req.url, true).query
+	let id = params.id
+	console.log(id)
+	let fileName = path.join(dataPath, id+'.json')
+	let file = fs.readFileSync(fileName)
+
+		let jokeJson = Buffer.from(file).toString()
+		let joke = JSON.parse(jokeJson)
+
+		joke.likes = Number(joke.likes) + 1;
+
+		
+		fs.writeFileSync(fileName, JSON.stringify(joke))
+}
+
+function dislike(req, res) {
+    // console.log(req, res)
+    const params = url.parse(req.url, true).query
+    let id = params.id
+    
+    let fileName = path.join(dataPath, id+'.json')
+    let file = fs.readFileSync(fileName)
+
+        let jokeJson = Buffer.from(file).toString()
+        let joke = JSON.parse(jokeJson)
+
+        joke.dislikes = Number(joke.dislikes) + 1;
+
+        
+        fs.writeFileSync(fileName, JSON.stringify(joke))
 }
